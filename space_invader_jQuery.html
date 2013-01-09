@@ -1,0 +1,137 @@
+<html>
+<head>
+<style>
+#space-invader {
+  box-shadow: 0 0 0 1em #333, 0 1em 0 1em #333, -2.5em 1.5em 0 .5em #333, 2.5em 1.5em 0 .5em #333, -3em -3em 0 0 #333, 3em -3em 0 0 #333, -2em -2em 0 0 #333, 2em -2em 0 0 #333, -3em -1em 0 0 #333, -2em -1em 0 0 #333, 2em -1em 0 0 #333, 3em -1em 0 0 #333, -4em 0 0 0 #333, -3em 0 0 0 #333, 3em 0 0 0 #333, 4em 0 0 0 #333, -5em 1em 0 0 #333, -4em 1em 0 0 #333, 4em 1em 0 0 #333, 5em 1em 0 0 #333, -5em 2em 0 0 #333, 5em 2em 0 0 #333, -5em 3em 0 0 #333, -3em 3em 0 0 #333, 3em 3em 0 0 #333, 5em 3em 0 0 #333, -2em 4em 0 0 #333, -1em 4em 0 0 #333, 1em 4em 0 0 #333, 2em 4em 0 0 #333;
+  background: #333;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  position:absolute;
+  left:0px;
+  top:0px;
+  transform: scale(.3, .3);
+  -ms-transform: scale(.3, .3);/* IE 9 */
+  -webkit-transform: scale(.3, .3); /* Safari and Chrome */
+  -o-transform: scale(.3, .3); /* Opera */
+  -moz-transform: scale(.3, .3); /* Firefox */
+}
+.container {
+  padding: 0px;
+  width: 300px;
+  height: 700px;
+  background-color: #eee;
+  position:relative;
+  margin: 20px auto;
+}
+
+#trap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50px;
+  height: 50px;
+  background-color: red;
+  opacity: .1;
+  cursor: move;
+}
+
+body {
+  text-align: center;
+  font-family: verdana, helvetica, sans-serif;
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+<h3>Space Invader!</h3>
+
+<div class="container">
+  <div id="space-invader"></div>
+  <div id="trap"></div>
+</div>
+
+<ul><li>Click inside the trap to heat up the fire</li>
+  <li>Move left/right to target the Space Invader</li>
+  <li>Mouse operation only. No keyboard support.</li>
+</ul>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script>
+var x = $("#space-invader").position().left;
+var y = $("#space-invader").position().top;
+var w = $(".container").width();
+var h = $(".container").height()-30;
+var dir = "toRight";
+
+//Start with a random x potion for the Invader
+$("#space-invader").css("left", w*Math.random());
+
+//Define the path the Invader moves along
+var time = setInterval(function(){
+
+  if (dir == "toRight") {
+    invaderRight();
+  } else if (dir == "toLeft") {
+    invaderLeft();
+  }
+  
+  if (x <= 0) { dir = "toRight";}
+  if (x >= w) { dir = "toLeft";}
+  if (y <= h) {invaderDown();}  
+  
+  x = $("#space-invader").position().left;
+  y = $("#space-invader").position().top;
+}, 100);
+
+
+function invaderRight(){
+  $("#space-invader").animate({'left': '+=5'},0);
+}
+
+function invaderLeft(){
+  $("#space-invader").animate({'left': '-=5'},0);
+}
+
+function invaderDown(){
+    $("#space-invader").animate({'top': '+=1'},0);
+}
+
+//Define the Trap behavior
+// 1. When the Trap is clicked, the opacity increases
+var alpha = parseFloat($("#trap").css("opacity"));
+$('#trap').click(function(){
+  if (alpha > 0.75) {
+    alpha = 0.75;
+  }else {
+    alpha += .05;
+  }
+  $("#trap").css("opacity", alpha);
+  alpha = parseFloat($("#trap").css("opacity"));
+});
+
+//2. When the mouse is at the bottom of the Container, the Trap moves with the mouse
+$('.container').mousemove(function(e){
+  var mX = e.pageX - $(this).offset().left,
+      mY = e.pageY - $(this).offset().top,
+      margin = $('#trap').width()/2;
+  
+  if (mY > $(this).height()-$("#trap").height()) {
+    if (mX > margin && mX < $(this).width()-margin){
+      $("#trap").offset({left: e.pageX-margin});
+    }
+  }
+});
+
+/*3. Define the success of the game
+$('#trap').click(function(){
+  if (alpha == .75 &&Invader is inside the trap){
+    //Invader stops moving around
+    //It will be contained in the trap, and move within
+    //Show the success comfirmation message: K.O.
+  } 
+}
+*/
+</script>
+</body>
+</html>
